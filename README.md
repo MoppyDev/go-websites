@@ -15,8 +15,9 @@ Both files take a [WebsiteName] parameter to create a base folder and then creat
 
 ### Go File
 ```go
-go run setup-go-website.go <website>
+go run setup-go-website.go -websiteName <website>
 ```
+If a website name is not defined a default folder will be created for you: ```default-go-website```
 
 ### PowerShell File
 ```powershell
