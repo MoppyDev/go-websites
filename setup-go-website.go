@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io/fs"
+	"io/ioutil"
 	"log"
 	"os"
 )
@@ -14,12 +15,21 @@ func main() {
 
 	if len(os.Args) <= 1 {
 		fmt.Printf("No website name passed. Using default value [%v]\n", *websiteName)
-	} else if len(os.Args) > 2 {
-		fmt.Print("Too many arguments passed.\n")
-		return
+	} else if len(os.Args) == 2 {
+		log.Fatal("Utilize -websiteName flag and then pass parameter\n")
+	} else if len(os.Args) > 3 {
+		log.Fatal("Too many arguments passed.\n")
 	}
 
 	flag.Parse()
+
+	if checkIfDirExists(*websiteName) {
+		log.Printf("Exiting.. Folder already exists: [%v]\n", *websiteName)
+		return
+	} else {
+		fmt.Println("Folder doesn't yet exist.")
+	}
+
 	fmt.Printf("Creating recommended folders for your new Go website [%v]\n", *websiteName)
 
 	makeDir(*websiteName, 0755)
@@ -33,6 +43,24 @@ func main() {
 
 	makeEmptyFile(*websiteName+"/cmd/web/main.go", 0755)
 	makeEmptyFile(*websiteName+"/cmd/web/handlers.go", 0755)
+}
+
+func checkIfDirExists(dir string) bool {
+	files, err := ioutil.ReadDir("./")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Searching for %v\n", dir)
+
+	for _, file := range files {
+		if file.Name() == dir {
+			fmt.Printf("Folder already exists [%v]\n", dir)
+			return true
+		}
+	}
+
+	return false
 }
 
 func makeDir(path string, permission fs.FileMode) {
